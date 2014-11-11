@@ -1,8 +1,55 @@
-<!doctype <!DOCTYPE html>
+<!DOCTYPE html>
+<meta charset="utf-8">
 <html>
 <head>
 	<title>Whoa, D3</title>
 </head>
 <body>
-<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+	var sales = [
+  { product: 'Hoodie',  count: 12 },
+  { product: 'Jacket',  count: 7 },
+  { product: 'Snuggie', count: 6 },
+];
+
+var pie = d3.layout.pie()
+  .value(function(d) { return d.count })
+
+var slices = pie(sales);
+
+var arc = d3.svg.arc()
+  .innerRadius(0)
+  .outerRadius(50);
+
+// helper that returns a color based on an ID
+var color = d3.scale.category10();
+
+var svg = d3.select('svg.pie');
+var g = svg.append('g')
+  .attr('transform', 'translate(200, 50)')
+
+g.selectAll('path.slice')
+  .data(slices)
+    .enter()
+      .append('path')
+        .attr('class', 'slice')
+        .attr('d', arc)
+        .attr('fill', function(d) {
+          return color(d.data.product);
+        });
+
+// building a legend is as simple as binding
+// more elements to the same data. in this case,
+// <text> tags
+svg.append('g')
+  .attr('class', 'legend')
+    .selectAll('text')
+    .data(slices)
+      .enter()
+        .append('text')
+          .text(function(d) { return '• ' + d.data.product; })
+          .attr('fill', function(d) { return color(d.data.product); })
+          .attr('y', function(d, i) { return 20 * (i + 1); })
+</script>
 </body>
